@@ -6,12 +6,24 @@ class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
 
     def handle(self, *args, **kwargs):
+
         self.stdout.write(self.style.WARNING('Deleting old data...'))
-        Activity.objects.all().delete()
-        Workout.objects.all().delete()
-        Leaderboard.objects.all().delete()
-        User.objects.all().delete()
-        Team.objects.all().delete()
+        for obj in Activity.objects.all():
+            if obj.pk:
+                obj.delete()
+        for workout in Workout.objects.all():
+            if workout.pk:
+                workout.suggested_for.clear()
+                workout.delete()
+        for obj in Leaderboard.objects.all():
+            if obj.pk:
+                obj.delete()
+        for obj in User.objects.all():
+            if obj.pk:
+                obj.delete()
+        for obj in Team.objects.all():
+            if obj.pk:
+                obj.delete()
 
         self.stdout.write(self.style.SUCCESS('Creating teams...'))
         marvel = Team.objects.create(name='Marvel', description='Marvel superheroes')

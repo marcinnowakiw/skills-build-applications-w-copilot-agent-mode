@@ -32,7 +32,13 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 class WorkoutSerializer(serializers.ModelSerializer):
     id = ObjectIdField(read_only=True)
-    suggested_for = serializers.ListField(child=ObjectIdField(), required=False)
+    # suggested_for will be handled in to_representation
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        # Serialize suggested_for as a list of ObjectId strings
+        rep['suggested_for'] = [str(user.id) for user in instance.suggested_for.all()]
+        return rep
     class Meta:
         model = Workout
         fields = '__all__'
